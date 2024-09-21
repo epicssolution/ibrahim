@@ -18,6 +18,7 @@ const manrope = Manrope({
   variable: "--font-mr",
 });
 
+// Define metadata with Open Graph and Twitter settings
 export const metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {
@@ -56,6 +57,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        {/* You can add additional head elements if needed */}
+      </head>
       <body
         className={cx(
           inter.variable,
@@ -63,6 +67,7 @@ export default function RootLayout({ children }) {
           "font-mr bg-light dark:bg-dark"
         )}
       >
+        {/* Theme switcher script for dark/light mode */}
         <Script id="theme-switcher" strategy="beforeInteractive">
           {`if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.documentElement.classList.add('dark')
@@ -70,10 +75,11 @@ export default function RootLayout({ children }) {
     document.documentElement.classList.remove('dark')
   }`}
         </Script>
+        
+        {/* Header and Footer are included around children */}
         <Header />
-        {children}
+        <main>{children}</main>
         <Footer />
-       
       </body>
     </html>
   );

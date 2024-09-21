@@ -39,7 +39,7 @@ export default async function Page({ params }) {
         <div className="w-full max-w-4xl">
           <Image
             src={course.imageUrl}
-            width={1000}
+            width={1300}
             height={500}
             alt={course.title || "Course image"}
             className="rounded w-full object-cover"

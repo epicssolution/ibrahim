@@ -1,24 +1,14 @@
-import ClientPage from "@/components/client page/page";
-import { client } from "@/sanity/lib/client";
+import Courses from "@/components/courses/page";
 
-const Page = async () => {
-  const coursesPerPage = 6;
-  const query = `*[_type=="course"]{
-    description,
-    "slug": slug.current,
-    "imageUrl": image.asset->url,
-    title,
-    href
-  }[0...${coursesPerPage}]`; // Fetch only the first set of courses
 
-  const initialCourses = await client.fetch(query);
+import React from 'react'
 
+const page = () => {
   return (
-    <main className="flex flex-col items-center justify-center">
-      <h1>Courses</h1>
-      <ClientPage initialCourses={initialCourses} coursesPerPage={coursesPerPage} />
-    </main>
-  );
-};
+    <div>
+      <Courses />
+    </div>
+  )
+}
 
-export default Page;
+export default page

@@ -1,9 +1,17 @@
-import Image from "next/image";
+import React from 'react'
+import HomePage from '@/components/maincomponent/page'
+import Courses from './courses/page'
 
-export default function Home() {
+
+const page = () => {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h1>mee</h1>
+    <div  className="flex flex-col items-center justify-center">
+      <HomePage />
+
+      <Courses />
+
     </div>
-  );
+  )
 }
+
+export default page
