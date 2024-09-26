@@ -2,7 +2,6 @@ import Head from 'next/head';
 import Image from "next/image";
 import { client } from "@/sanity/lib/client";
 import VisitCourseButton from "@/components/button/page";
-import siteMetadata from "@/utils/siteMetadata";  // Correctly cased import
 
 export const revalidate = 60; // seconds
 
@@ -29,40 +28,37 @@ export default async function Page({ params }) {
 
   const course = await client.fetch(query, { slug });
 
-  // Fallback image for social media previews if course image is unavailable
-  const ogImageUrl = course.imageUrl || siteMetadata.defaultImage;
-
   return (
     <article className="mt-12 mb-24 px-2 2xl:px-12 flex flex-col gap-y-8 items-center text-dark dark:text-light">
       {/* Adding dynamic Open Graph meta tags */}
       <Head>
-        <title>{course.title} | courses</title>
+        <title>{course.title} | Study Visa Consultant</title>
         <meta name="description" content={course.description} />
 
         {/* Open Graph tags for all social platforms */}
         <meta property="og:title" content={course.title} />
         <meta property="og:description" content={course.description} />
-        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image" content={course.imageUrl} />
         <meta property="og:url" content={`https://www.galaxyeducation.org/course/${course.slug}`} />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Galaxy Education" />
-        <meta property="fb:app_id" content={siteMetadata.fbAppID} />
+        <meta property="fb:app_id" content="your-app-id" /> {/* Replace with your Facebook App ID */}
 
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={course.title} />
         <meta name="twitter:description" content={course.description} />
-        <meta name="twitter:image" content={ogImageUrl} />
+        <meta name="twitter:image" content={course.imageUrl} />
 
         {/* LinkedIn Tags */}
+        <meta property="og:site_name" content="Galaxy Education" />
         <meta name="linkedin:title" content={course.title} />
         <meta name="linkedin:description" content={course.description} />
-        <meta name="linkedin:image" content={ogImageUrl} />
+        <meta name="linkedin:image" content={course.imageUrl} />
 
         {/* Pinterest Tags */}
         <meta name="pinterest:title" content={course.title} />
         <meta name="pinterest:description" content={course.description} />
-        <meta name="pinterest:image" content={ogImageUrl} />
+        <meta name="pinterest:image" content={course.imageUrl} />
       </Head>
 
       {/* Blog Title */}

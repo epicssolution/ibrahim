@@ -12,7 +12,7 @@ const Page = () => {
     <div>
       <Head>
         {/* General Meta Tags */}
-        <title> Consultant - online courses</title>
+        <title>Study Visa Consultant - Galaxy Education</title>
         <meta name="description" content="A blog created with Next.js, Tailwind.css, and contentlayer." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="UTF-8" />

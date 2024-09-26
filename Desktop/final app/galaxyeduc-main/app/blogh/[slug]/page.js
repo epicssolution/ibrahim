@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import BlogDetails from "@/components/blogdetail/page";
 import siteMetadata from "@/utils/siteMetaData";
 import { client } from "@/sanity/lib/client";
@@ -8,15 +7,13 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 
 export default async function BlogPage({ params }) {
-  // Ensure that params.slug exists
   if (!params?.slug) {
     notFound();
     return null;
   }
 
-  // Fetch the blog data from Sanity for the "university" type
   const query = `
-    *[_type == "university" && slug.current == $slug][0]{
+    *[_type == "uni" && slug.current == $slug][0]{
       title,
       description,
       "slug": slug.current,
@@ -30,19 +27,16 @@ export default async function BlogPage({ params }) {
   
   const blog = await client.fetch(query, { slug: params.slug });
 
-  // Handle blog not found
   if (!blog) {
     notFound();
     return null;
   }
 
-  // Prepare images for structured data
   let imageList = [siteMetadata.socialBanner];
   if (blog.image) {
     imageList = [urlFor(blog.image).url()];
   }
 
-  // Prepare JSON-LD for SEO
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
@@ -54,11 +48,10 @@ export default async function BlogPage({ params }) {
     "author": [{
         "@type": "Person",
         "name": siteMetadata.author,
-        "url": siteMetadata.twitterHandle,
+        "url": siteMetadata.twitter,
       }]
   };
 
-  // Extract headings for Table of Contents
   const headings = [];
 
   if (blog.heading1) {
@@ -83,32 +76,30 @@ export default async function BlogPage({ params }) {
 
   return (
     <>
-      <Head>
-        <title>{blog.title} | Study Visa Consultant</title>
-        <meta name="description" content={blog.description} />
-        
-        {/* Open Graph tags */}
+      <head>
+        {/* Open Graph Meta Tags for Facebook */}
+        <meta property="og:url" content={`https://www.galaxyeducation.org/blog/${params.slug}`} />
+        <meta property="og:type" content="article" />
         <meta property="og:title" content={blog.title} />
         <meta property="og:description" content={blog.description} />
-        <meta property="og:image" content={blog.image ? urlFor(blog.image).url() : siteMetadata.socialBanner} />
-        <meta property="og:url" content={`https://www.galaxyeducation.org/university/${blog.slug}`} />
-        <meta property="og:type" content="website" />
-        <meta property="fb:app_id" content={siteMetadata.fbAppID} />
+        <meta property="og:image" content={imageList[0]} />
+        <meta property="fb:app_id" content="your-app-id" /> {/* Add your Facebook app ID here */}
 
-        {/* Twitter Card tags */}
+        {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`https://www.galaxyeducation.org/blog/${params.slug}`} />
         <meta name="twitter:title" content={blog.title} />
         <meta name="twitter:description" content={blog.description} />
-        <meta name="twitter:image" content={blog.image ? urlFor(blog.image).url() : siteMetadata.socialBanner} />
+        <meta name="twitter:image" content={imageList[0]} />
+        <meta name="twitter:creator" content={siteMetadata.twitter} />
 
-        {/* LinkedIn Meta Tags */}
-        <meta property="og:site_name" content="Galaxy Education" />
-        <meta property="article:published_time" content={new Date(blog.publishedAt).toISOString()} />
-        <meta property="article:author" content={siteMetadata.author} />
-
-        {/* Other social media platforms */}
-        <meta property="og:image:alt" content={blog.title} />
-      </Head>
+        {/* LinkedIn Open Graph Meta Tags */}
+        <meta property="og:title" content={blog.title} />
+        <meta property="og:description" content={blog.description} />
+        <meta property="og:image" content={imageList[0]} />
+        <meta property="og:url" content={`https://www.galaxyeducation.org/blog/${params.slug}`} />
+        <meta property="og:type" content="article" />
+      </head>
 
       <script
         type="application/ld+json"
@@ -127,7 +118,7 @@ export default async function BlogPage({ params }) {
             <Image
               src={urlFor(blog.image).url()}
               alt={blog.title}
-              layout="fill"
+              fill 
               className="aspect-square w-full h-full object-cover object-center"
               priority
               sizes="100vw"

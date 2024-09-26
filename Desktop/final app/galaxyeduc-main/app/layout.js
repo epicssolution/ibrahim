@@ -2,7 +2,7 @@ import "./globals.css";
 import { cx } from "@/utils";
 import { Inter, Manrope } from "next/font/google";
 import Header from "@/components/Header";
-import siteMetadata from "@/utils/siteMetadata"; // Ensure correct casing
+import siteMetadata from "@/utils/siteMetaData";
 import Script from "next/script";
 import Footer from "@/components/Footer";
 
@@ -31,14 +31,7 @@ export const metadata = {
     description: siteMetadata.description,
     url: siteMetadata.siteUrl,
     siteName: siteMetadata.title,
-    images: [
-      {
-        url: `${siteMetadata.siteUrl}${siteMetadata.socialBanner}`, // Ensure full URL for Open Graph image
-        width: 1200,
-        height: 630,
-        alt: "Galaxy Education Social Banner",
-      },
-    ],
+    images: [siteMetadata.socialBanner],
     locale: "en_US",
     type: "website",
   },
@@ -57,13 +50,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: siteMetadata.title,
-    description: siteMetadata.description,
-    images: [
-      {
-        url: `${siteMetadata.siteUrl}${siteMetadata.socialBanner}`, // Ensure full URL for Twitter image
-        alt: "Galaxy Education Social Banner",
-      },
-    ],
+    images: [siteMetadata.socialBanner],
   },
 };
 
@@ -88,7 +75,7 @@ export default function RootLayout({ children }) {
     document.documentElement.classList.remove('dark')
   }`}
         </Script>
-
+        
         {/* Header and Footer are included around children */}
         <Header />
         <main>{children}</main>

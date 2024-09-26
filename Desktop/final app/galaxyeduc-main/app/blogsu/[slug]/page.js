@@ -1,11 +1,9 @@
 import Head from 'next/head';
 import Image from "next/image";
 import { client } from "@/sanity/lib/client";
-import siteMetadata from "@/utils/siteMetadata"; // Import site metadata
 
 export const revalidate = 60; // seconds
 
-// Generate static params for dynamic routes
 export async function generateStaticParams() {
   const query = `*[_type=='sucess']{
     "slug": slug.current
@@ -34,33 +32,30 @@ export default async function Page({ params }) {
     return <div className="text-center">Course not found</div>;
   }
 
-  // Fallback image for social sharing if the course image is missing
-  const ogImageUrl = course.imageUrl || siteMetadata.socialBanner;
-
   return (
     <>
       {/* Add Open Graph and Twitter Card Meta Tags */}
       <Head>
-        <title>{course.title || "Success Story"}</title>
-        <meta name="description" content={course.description || "Success story description"} />
-
+        <title>{course.title || "Course Title"}</title>
+        <meta name="description" content={course.description || "Course description"} />
+        
         {/* Open Graph meta tags for Facebook, LinkedIn */}
-        <meta property="og:title" content={course.title || "Success Story"} />
-        <meta property="og:description" content={course.description || "Success story description"} />
-        <meta property="og:image" content={ogImageUrl} />
-        <meta property="og:url" content={`${siteMetadata.siteUrl}/success/${course.slug}`} />
+        <meta property="og:title" content={course.title || "Course Title"} />
+        <meta property="og:description" content={course.description || "Course description"} />
+        <meta property="og:image" content={course.imageUrl || "/default-image.jpg"} />
+        <meta property="og:url" content={`https://www.galaxyeducation.org/success/${course.slug}`} />
         <meta property="og:type" content="website" />
-        <meta property="fb:app_id" content={siteMetadata.fbAppID} />
+        <meta property="fb:app_id" content="your-app-id" /> {/* Add your Facebook App ID */}
 
         {/* Twitter Card meta tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={course.title || "Success Story"} />
-        <meta name="twitter:description" content={course.description || "Success story description"} />
-        <meta name="twitter:image" content={ogImageUrl} />
-        <meta name="twitter:url" content={`${siteMetadata.siteUrl}/success/${course.slug}`} />
+        <meta name="twitter:title" content={course.title || "Course Title"} />
+        <meta name="twitter:description" content={course.description || "Course description"} />
+        <meta name="twitter:image" content={course.imageUrl || "/default-image.jpg"} />
+        <meta name="twitter:url" content={`https://www.galaxyeducation.org/success/${course.slug}`} />
 
         {/* LinkedIn specific meta tags */}
-        <meta property="og:site_name" content={siteMetadata.siteName} />
+        <meta property="og:site_name" content="Galaxy Education" />
         <meta property="og:locale" content="en_US" />
         <meta property="article:author" content="Galaxy Education Team" />
       </Head>

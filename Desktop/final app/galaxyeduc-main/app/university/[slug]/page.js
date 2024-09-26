@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import BlogDetails from "@/components/blogdetail/page";
 import siteMetadata from "@/utils/siteMetaData";
 import { client } from "@/sanity/lib/client";
@@ -7,13 +8,15 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 
 export default async function BlogPage({ params }) {
+  // Ensure that params.slug exists
   if (!params?.slug) {
     notFound();
     return null;
   }
 
+  // Fetch the blog data from Sanity for the "university" type
   const query = `
-    *[_type == "uni" && slug.current == $slug][0]{
+    *[_type == "university" && slug.current == $slug][0]{
       title,
       description,
       "slug": slug.current,
@@ -24,18 +27,22 @@ export default async function BlogPage({ params }) {
       heading2
     }
   `;
-
+  
   const blog = await client.fetch(query, { slug: params.slug });
 
+  // Handle blog not found
   if (!blog) {
     notFound();
     return null;
   }
 
-  // Use the blog image for social media preview or fallback to the site banner
-  let imageList = blog.image ? [urlFor(blog.image).url()] : [siteMetadata.socialBanner];
+  // Prepare images for structured data
+  let imageList = [siteMetadata.socialBanner];
+  if (blog.image) {
+    imageList = [urlFor(blog.image).url()];
+  }
 
-  // Schema.org JSON-LD data for SEO
+  // Prepare JSON-LD for SEO
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
@@ -45,60 +52,72 @@ export default async function BlogPage({ params }) {
     "datePublished": new Date(blog.publishedAt).toISOString(),
     "dateModified": new Date(blog.publishedAt).toISOString(),
     "author": [{
-      "@type": "Person",
-      "name": siteMetadata.author,
-      "url": siteMetadata.twitter,
-    }]
+        "@type": "Person",
+        "name": siteMetadata.author,
+        "url": siteMetadata.twitter,
+      }]
   };
 
+  // Extract headings for Table of Contents
   const headings = [];
-  if (blog.heading1) headings.push({ text: blog.heading1, slug: "heading-1", level: "1" });
-  if (blog.heading2) headings.push({ text: blog.heading2, slug: "heading-2", level: "2" });
 
-  // Extract headings from blog content if applicable
+  // Include heading1 and heading2 in the TOC if they exist
+  if (blog.heading1) {
+    headings.push({ text: blog.heading1, slug: "heading-1", level: "1" });
+  }
+  if (blog.heading2) {
+    headings.push({ text: blog.heading2, slug: "heading-2", level: "2" });
+  }
+
+  // Extract additional headings from content
   if (blog.content && Array.isArray(blog.content)) {
-    blog.content
-      .filter(block => block.style && block.style.match(/^h[1-6]$/))
+    blog.content.filter(block => block.style && block.style.match(/^h[1-6]$/))
       .forEach((heading, index) => {
-        const level = heading.style.replace('h', '');
+        const level = heading.style.replace('h', ''); // Extract the heading level
         const text = heading.children.map(child => child.text).join("");
-        headings.push({ text, slug: `content-heading-${index}`, level });
+        headings.push({
+          text,
+          slug: `content-heading-${index}`,
+          level,
+        });
       });
   }
 
+  // Render the page
   return (
     <>
       <Head>
-        {/* Open Graph Meta Tags for Facebook */}
-        <meta property="og:url" content={`https://www.galaxyeducation.org/blog/${params.slug}`} />
-        <meta property="og:type" content="article" />
+        <title>{blog.title} | Study Visa Consultant</title>
+        <meta name="description" content={blog.description} />
+        
+        {/* Open Graph tags */}
         <meta property="og:title" content={blog.title} />
         <meta property="og:description" content={blog.description} />
-        <meta property="og:image" content={imageList[0]} />
-        <meta property="fb:app_id" content={siteMetadata.fbAppID} /> {/* Use the actual Facebook app ID */}
+        <meta property="og:image" content={blog.image ? urlFor(blog.image).url() : siteMetadata.socialBanner} />
+        <meta property="og:url" content={`https://www.galaxyeducation.org/university/${blog.slug}`} />
+        <meta property="og:type" content="website" />
+        <meta property="fb:app_id" content="your-app-id" /> {/* Add your actual FB App ID here */}
 
-        {/* Twitter Card Meta Tags */}
+        {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={`https://www.galaxyeducation.org/blog/${params.slug}`} />
         <meta name="twitter:title" content={blog.title} />
         <meta name="twitter:description" content={blog.description} />
-        <meta name="twitter:image" content={imageList[0]} />
-        <meta name="twitter:creator" content={siteMetadata.twitterHandle} />
+        <meta name="twitter:image" content={blog.image ? urlFor(blog.image).url() : siteMetadata.socialBanner} />
 
-        {/* LinkedIn Open Graph Meta Tags */}
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.description} />
-        <meta property="og:image" content={imageList[0]} />
-        <meta property="og:url" content={`https://www.galaxyeducation.org/blog/${params.slug}`} />
-        <meta property="og:type" content="article" />
+        {/* LinkedIn Meta Tags */}
+        <meta property="og:site_name" content="Galaxy Education" />
+        <meta property="article:published_time" content={new Date(blog.publishedAt).toISOString()} />
+        <meta property="article:author" content={siteMetadata.author} />
+
+        {/* Other social media platforms (e.g., Pinterest, Reddit) */}
+        <meta property="og:image:alt" content={blog.title} />
+
       </Head>
 
-      {/* Schema.org JSON-LD for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
       <article>
         <div className="mb-8 text-center relative w-full h-[70vh] bg-gray-800">
           <div className="w-full z-10 flex flex-col items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -111,16 +130,14 @@ export default async function BlogPage({ params }) {
             <Image
               src={urlFor(blog.image).url()}
               alt={blog.title}
-              fill
+              layout="fill"
               className="aspect-square w-full h-full object-cover object-center"
               priority
               sizes="100vw"
             />
           )}
         </div>
-
         <BlogDetails blog={blog} slug={params.slug} toc={headings} />
-
         <div className="grid grid-cols-12 gap-y-8 lg:gap-8 sxl:gap-16 mt-8 px-5 md:px-10">
           <div className="col-span-12 lg:col-span-4">
             <details
@@ -158,7 +175,6 @@ export default async function BlogPage({ params }) {
               </ul>
             </details>
           </div>
-
           <div className="col-span-12 lg:col-span-8 border-dark dark:border-light text-black dark:text-light">
             {blog.content ? <PortableText value={blog.content} /> : <p>No content available</p>}
           </div>

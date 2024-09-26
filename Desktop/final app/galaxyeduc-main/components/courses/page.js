@@ -37,11 +37,11 @@ const Courses = () => {
     <main className="w-full mt-16 sm:mt-24 md:mt-32 px-5 sm:px-10 md:px-24 lg:px-32 flex flex-col items-center justify-center">
       {/* Adding Head component for SEO and Open Graph meta tags */}
       <Head>
-        <title>Courses | online Courses</title>
+        <title>Courses | Study Visa Consultant</title>
         <meta name="description" content="Explore our latest courses created with Next.js, Tailwind CSS, and more." />
         
         {/* Open Graph tags */}
-        <meta property="og:title" content="Courses " />
+        <meta property="og:title" content="Courses | Study Visa Consultant" />
         <meta property="og:description" content="Explore our latest courses created with Next.js, Tailwind CSS, and more." />
         <meta property="og:image" content={courses[0]?.imageUrl || '/default-image.jpg'} />
         <meta property="og:url" content="https://www.galaxyeducation.org/courses" />
